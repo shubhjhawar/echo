@@ -61,11 +61,17 @@ export const getRecentPosts = async () => {
 
 export const getSimilarPosts = async () => {
     const query=gql`
+                # arguments 
         query GetPostDetails($slug: String!, $categories: [String!]) {
+            # conditions
             posts(
                 where: { slug_not: $slug, AND: {categories_some: { slug_in: $categories}}}
+                # slug should not be the one of the main post but the same categoires of the main post
                 Last: 3
-            ) {
+                # last 3 from the db
+            ) 
+            # things to get from graphql query
+            {
                 title
                 featuredImage {
                     url
