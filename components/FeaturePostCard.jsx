@@ -4,7 +4,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 const FeaturePostCard = ({post}) => {
-  console.log(post.featuredImage.url);
   return (
     <div className="relative h-72">
     <div className="absolute rounded-lg bg-center bg-no-repeat bg-cover shadow-md inline-block w-full h-72" style={{ backgroundImage: `url('${post.featuredImage.url}')` }} />
