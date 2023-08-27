@@ -59,7 +59,7 @@ export const getRecentPosts = async () => {
     return result.posts;
 }
 
-export const getSimilarPosts = async () => {
+export const getSimilarPosts = async (categories, slug) => {
     const query=gql`
                 # arguments 
         query GetPostDetails($slug: String!, $categories: [String!]) {
@@ -67,7 +67,7 @@ export const getSimilarPosts = async () => {
             posts(
                 where: { slug_not: $slug, AND: {categories_some: { slug_in: $categories}}}
                 # slug should not be the one of the main post but the same categoires of the main post
-                Last: 3
+                last: 3
                 # last 3 from the db
             ) 
             # things to get from graphql query
@@ -81,7 +81,7 @@ export const getSimilarPosts = async () => {
             }
         }
     `
-    const result = await request(graphqlAPI, query);
+    const result = await request(graphqlAPI, query, {categories, slug});
     return result.posts;
 }
 
@@ -96,4 +96,73 @@ export const getCategories = async () => {
     `
     const result = await request(graphqlAPI, query);
     return result.categories;
+}
+
+// passing the params as the argument (slug in this case)
+export const getPostDetails = async (slug) => {
+    const query = gql`
+        # this is like TS => decalring the type od slug and stating it is important
+        query GetPostDetails($slug: String!) {
+            # fetching the post where the slug is equal to the slug passed above
+            post(where: {slug:$slug}) {
+                author {
+                    bio
+                    id
+                    name
+                    photo {
+                        url
+                    }
+                    }
+                    createdAt
+                    slug
+                    title
+                    excerpt
+                    featuredImage {
+                    url
+                    }
+                    categories {
+                    name
+                    slug
+                    }
+                    content {
+                        raw
+                    }
+                }
+            }`
+                                                    // passing the slug here as well
+    const result = await request(graphqlAPI, query, {slug});
+
+    return result.post;
+}
+
+export const submitComment = async (obj) => {
+    const result = await fetch('/api/comments', {
+        method: 'POST',
+        headers: {
+            'Content-Type':'application/json'
+        },
+        body: JSON.stringify(obj),
+    })
+
+    return result.json();
+}
+
+export const getComments = async (slug) => {
+    const query = gql`
+        query GetComments($slug: String!) {
+            comments(where: {post: { slug: $slug } } ){
+                name
+                createdAt
+                comment
+            }
+        }
+    `
+    try {
+        const result = await request(graphqlAPI, query, { slug });
+        console.log("GraphQL Result:", result);
+        return result.comments;
+    } catch (error) {
+        console.error("GraphQL Error:", error);
+        return [];
+    }
 }
