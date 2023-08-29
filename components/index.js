@@ -8,3 +8,4 @@ export {default as Author} from './Author';
 export {default as Comments} from './Comments';
 export {default as CommentForm} from './CommentForm';
 export {default as FeaturePostCard} from './FeaturePostCard';
+export {default as Loader} from './Loader';
